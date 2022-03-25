@@ -1,0 +1,42 @@
+---
+#
+# collect our SSH key for logging in
+#
+- hosts: localhost
+  tasks:
+    - name: collect ssh keys from 1password and log out
+      ansible.builtin.include_role:
+        name: bz.onepassword
+        tasks_from: collect-secure-note
+      vars:
+        op_name: "ssh-key_{{ passed_in_host }}"
+        key_hostname: "{{ passed_in_host }}"
+      loop: "{{ passed_in_hosts.split(',') }}"
+      loop_control:
+        loop_var: passed_in_host
+      when: passed_in_host != '127.0.0.1'
+      no_log: True
+
+- hosts: "{{ passed_in_hosts|default('127.0.0.1') }}"
+  become: True
+  vars_files:
+    - vars/main.yml
+  roles:
+    - role: bz.system
+    - role: bz.security
+    - role: bz.cli-utils
+    - role: bz.mail
+    - role: bz.sophos
+    - role: bz.zabbix
+    - role: bz.firewall
+  tasks:
+    - name: set up local admin users
+      include_role:
+        name: bz.local-users
+        apply:
+          tags:
+            - local-users
+      vars:
+        local_users_present: "{{ bz_local_users }}"
+      tags:
+        - local-users

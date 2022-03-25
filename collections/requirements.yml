@@ -1,0 +1,8 @@
+---
+collections:
+  - community.general
+  - community.mysql
+  - community.zabbix
+  - community.vmware
+  - community.postgresql
+  - amazon.aws

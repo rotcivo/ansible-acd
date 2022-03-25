@@ -1,0 +1,62 @@
+---
+ruby_version: ruby-2.6.3
+deploy_user: deploy
+deploy_group: deploy
+deploy_user_key:
+local_admin_users:
+  - name: 'victor_o'
+    gecos: 'Victor Olivo'
+    uid: 1478
+    gid: 1478
+    sudo_access: True
+    key: "{{ lookup('file', '{{ hostvars[\"localhost\"][\"playbook_dir\"] }}/pubkeys/victor_o') }}"
+  - name: 'khris_s'
+    gecos: 'Khris Smith'
+    uid: 1404
+    gid: 1404
+    sudo_access: True
+    key: "{{ lookup('file', '{{ hostvars[\"localhost\"][\"playbook_dir\"] }}/pubkeys/khris_s') }}"
+  - name: 'simon_b'
+    gecos: 'Simon Brown'
+    uid: 1111
+    gid: 1111
+    sudo_access: True
+    key: "{{ lookup('file', '{{ hostvars[\"localhost\"][\"playbook_dir\"] }}/pubkeys/simon_b') }}"
+local_dev_users:
+  - name: 'federico_r'
+    gecos: 'Federico Ramirez'
+    uid: 1327
+    gid: 1327
+    sudo_access: True
+    key: "{{ lookup('file', '{{ hostvars[\"localhost\"][\"playbook_dir\"] }}/pubkeys/federico_r') }}"
+bz_users: "{{ local_admin_users }} + {{ local_dev_users }}"
+local_deploy_user:
+  - name: 'deploy'
+    gecos: 'Deploy User'
+    uid: 10000
+    gid: 10000
+    sudo_access: True
+    key: "{{ bz_users|map(attribute='key')|join('\n') }}"
+# dev users don't get a shell
+bz_local_users: "{{ local_admin_users }} + {{ local_deploy_user }}"
+
+#
+# OP bits
+#
+op_subdomain: beezwax-team
+op_username: systems@beezwax.net
+op_master_password: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;onepassword-vault
+          38336465663232326535633637343930643434383730626230633834346265353563633738623865
+          6235653830656133353861303736393265343062313962650a616235613664623265386466393366
+          34613737336134663761373734343734623565633139386339363636333964663661373263626532
+          6236613934343931320a323537386364303764323837326136346563346265653135333064636239
+          64643730306433326536386638396261386233653232393035313930656263303766
+op_secret_key: !vault |
+          $ANSIBLE_VAULT;1.2;AES256;onepassword-vault
+          64346539386162383536383961353466653364643834613237366166666661356264346131633564
+          3636343034626330373566626362346330326365316261310a356561646363393064373734336330
+          37383735343037633033626631333464343965393363373464333139633637383735303664383766
+          3964316535616439330a643238316564653334363930333632393831376533613033613432613963
+          63313066356130373364356530363336376338656631663330373264383635653164383337333962
+          3765643639626661656137303564393634343931323531643762

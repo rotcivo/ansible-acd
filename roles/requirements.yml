@@ -1,0 +1,25 @@
+---
+#
+# app env install
+#
+- src: rvm.ruby
+
+#
+# base system install
+#
+- src: git+ssh://github.com/beezwax/bz.system.git
+- src: git+ssh://github.com/beezwax/bz.sophos.git
+- src: git+ssh://github.com/beezwax/bz.mail.git
+- src: git+ssh://github.com/beezwax/bz.zabbix.git
+- src: git+ssh://github.com/beezwax/bz.firewall.git
+- src: git+ssh://github.com/beezwax/bz.security.git
+- src: git+ssh://github.com/beezwax/bz.local-users.git
+- src: git+ssh://github.com/beezwax/bz.cli-utils.git
+- src: git+ssh://github.com/beezwax/bz.codedeploy.git
+- src: git+ssh://github.com/beezwax/bz.nginx-passenger.git
+- src: git+ssh://github.com/beezwax/bz.database.git
+
+#
+# peripheral
+#
+- src: git+ssh://github.com/beezwax/bz.onepassword.git

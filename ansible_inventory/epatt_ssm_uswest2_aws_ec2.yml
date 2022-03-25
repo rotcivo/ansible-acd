@@ -1,0 +1,50 @@
+#
+# careful here as this is a giant jinja2 template...
+#
+# requirements:
+#   * boto3
+#   * botocore
+#
+plugin: amazon.aws.aws_ec2
+strict: true
+boto_profile: epatt
+regions:
+  - us-west-2
+# this exclusion ability is only available in anible 2.10+
+exclude_filters:
+- platform:
+  - windows
+filters:
+  instance-state-name:
+    - running
+hostnames:
+  - tag:hostname
+  - private-ip-address
+  - private-dns-name
+  - dns-name
+compose:
+  ansible_ssh_private_key_file: "'/home/devuser/.ssh/' + tags.hostname|default('')"
+  ansible_port: tags.ssh_port|default('null')
+  ansible_user: tags.ssh_user|default('null')
+  ansible_host: instance_id
+  use_zabbix_active: tags.UseZabbixActive|default('omit')
+  sys_hostname: tags.hostname|default('nohostname')
+  ansible_ssh_common_args: "'-o StrictHostKeyChecking=no -o ProxyCommand=\"aws ssm start-session --profile epatt --region us-west-2 --target %h --document-name AWS-StartSSHSession --parameters \"portNumber=%p\"\"'"
+
+groups:
+  # adds all our hosts to a single group
+  bz_aws: True
+keyed_groups:
+  #  each aws ec2 instance has it own instance tags. create
+  #  a tag variable from those tags for ansible to use.
+  #  if the ec2 tag Name had the value cygnusx1 the tag
+  #  variable would be:
+  #  tag_Name_cygnusx1
+  #  if a tag existed for an aws instance as
+  #  Applications with the value of Oracle the
+  #  variable would be:
+  #  tag_Applications_Oracle
+  - key: tags
+    prefix: tag
+  - key: key_name
+    prefix: sshkey
